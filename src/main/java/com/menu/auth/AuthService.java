@@ -1,16 +1,34 @@
+
 package com.menu.auth;
 
-import com.menu.security.JwtService;
-import com.menu.user.User;
-import com.menu.user.UserRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.menu.security.JwtService;
+import com.menu.user.User;
+import com.menu.user.UserRepository;
+
+import jakarta.transaction.Transactional;
+
 @Service
 public class AuthService {
+    public static class RegisterResult {
+        private final User user;
+        public RegisterResult(User user) {
+            this.user = user;
+        }
+        public User user() { return user; }
+    }
+
+    public JwtService getJwtService() {
+        return jwtService;
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -28,26 +46,29 @@ public class AuthService {
     }
 
     @Transactional
-    public String register(String username, String email, String password) {
-        if (userRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("Username already taken");
-        }
+    public RegisterResult register(String email, String password, String confirmPassword, String restaurantName, String phoneNumber, String address, String cuisineType) {
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Email already in use");
         }
+        if (!password.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
         User user = new User();
-        user.setUsername(username);
         user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(password));
+    user.setRestaurantName(restaurantName);
+        user.setPhoneNumber(phoneNumber);
+        user.setAddress(address);
+        user.setCuisineType(cuisineType);
         userRepository.save(user);
-        return jwtService.generateToken(user.getUsername());
+    return new RegisterResult(user);
     }
 
-    public String authenticate(String username, String password) {
+    public String authenticate(String email, String password) {
         UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken(username, password);
+                new UsernamePasswordAuthenticationToken(email, password);
         authenticationManager.authenticate(token);
-        return jwtService.generateToken(username);
+        return jwtService.generateToken(email);
     }
 }
 

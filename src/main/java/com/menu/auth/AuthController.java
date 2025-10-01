@@ -1,17 +1,24 @@
+
 package com.menu.auth;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.menu.user.User;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
 @Validated
+@CrossOrigin
 public class AuthController {
 
     private final AuthService authService;
@@ -20,21 +27,94 @@ public class AuthController {
         this.authService = authService;
     }
 
-    public static record RegisterRequest(@NotBlank String username, @Email String email, @NotBlank String password) {}
-    public static record AuthRequest(@NotBlank String username, @NotBlank String password) {}
-    public static record AuthResponse(String token) {}
+    public static record RegisterRequest(
+        @Email String email,
+        @NotBlank String password,
+        @NotBlank String confirmPassword,
+      @NotBlank String restaurantName,
+        @NotBlank String phoneNumber,
+        @NotBlank String address,
+        @NotBlank String cuisineType
+    ) {}
+    public static record AuthRequest(@Email String email, @NotBlank String password) {}
+    public static record AuthResponse(
+        Long id,
+        String email,
+         String restaurantName,
+        String phoneNumber,
+        String address,
+        String cuisineType,
+        String token,
+        String message
+    ) {}
+    public static record LoginResponse(
+        Long id,
+        String email,
+        String restaurantName,
+        String phoneNumber,
+        String address,
+        String token,
+        String message
+    ) {}
+
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        String token = authService.register(request.username(), request.email(), request.password());
-        return ResponseEntity.ok(new AuthResponse(token));
+        var result = authService.register(
+            request.email(),
+            request.password(),
+            request.confirmPassword(),
+            request.restaurantName(),
+            request.phoneNumber(),
+            request.address(),
+            request.cuisineType()
+        );
+        User user = result.user();
+        return ResponseEntity.ok(new AuthResponse(
+            user.getId(),
+            user.getEmail(),
+            user.getRestaurantName(),
+            user.getPhoneNumber(),
+            user.getAddress(),
+            user.getCuisineType(),
+            null,
+            "Registration success"
+        ));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        String token = authService.authenticate(request.username(), request.password());
-        return ResponseEntity.ok(new AuthResponse(token));
+    public ResponseEntity<LoginResponse> login(@RequestBody AuthRequest request) {
+        String token = authService.authenticate(request.email(), request.password());
+        User user = authService.getUserByEmail(request.email());
+        return ResponseEntity.ok(new LoginResponse(
+            user.getId(),
+            user.getEmail(),
+            user.getRestaurantName(),
+            user.getPhoneNumber(),
+            user.getAddress()
+,            token,
+            "login success"
+        ));
     }
+    @GetMapping("/me")
+    public ResponseEntity<LoginResponse> getMe(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).build();
+        }
+        String token = authHeader.substring(7);
+        String email = authService.getJwtService().extractRestaurantName(token);
+        User user = authService.getUserByEmail(email);
+        return ResponseEntity.ok(new LoginResponse(
+            user.getId(),
+            user.getEmail(),
+            user.getRestaurantName(),
+            user.getPhoneNumber(),
+            user.getAddress(),
+            token,
+            "user info"
+        ));
+    }
+
 }
 
 

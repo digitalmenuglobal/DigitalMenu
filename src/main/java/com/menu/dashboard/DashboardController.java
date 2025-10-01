@@ -11,8 +11,8 @@ public class DashboardController {
 
     @GetMapping("/")
     public ResponseEntity<String> getDashboard(Authentication authentication) {
-        String username = authentication.getName();
-        return ResponseEntity.ok("Hello, " + username + "! Your JWT is valid.");
+    String restaurantName = authentication.getName();
+    return ResponseEntity.ok("Hello, " + restaurantName + "! Your JWT is valid.");
     }
 }
 

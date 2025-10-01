@@ -20,7 +20,8 @@ public class JwtService {
     @Value("${app.jwt.expirationMs:3600000}")
     private long jwtExpirationMs;
 
-    public String extractUsername(String token) {
+
+    public String extractRestaurantName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -29,20 +30,22 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(String username) {
+
+    public String generateToken(String restaurantName) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtExpirationMs);
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(restaurantName)
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean isTokenValid(String token, String username) {
-        final String extracted = extractUsername(token);
-        return (extracted != null && extracted.equals(username) && !isTokenExpired(token));
+
+    public boolean isTokenValid(String token, String restaurantName) {
+        final String extracted = extractRestaurantName(token);
+        return (extracted != null && extracted.equals(restaurantName) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
