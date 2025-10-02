@@ -36,7 +36,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/actuator/health", "/h2-console/**", "/oauth2/**", "/login/oauth2/**").permitAll()
+                .requestMatchers("/api/auth/**", "/api/menu/public/restaurant/**", "/actuator/health", "/h2-console/**", "/oauth2/**", "/login/oauth2/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight
                 .anyRequest().authenticated()
             )

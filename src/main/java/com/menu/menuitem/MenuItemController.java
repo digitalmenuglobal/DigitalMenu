@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/menu")
 public class MenuItemController {
+    @GetMapping("/public/restaurant/{restaurantId}")
+    public ResponseEntity<List<MenuItem>> getMenuItemsByRestaurantPublic(@PathVariable Long restaurantId) {
+        List<MenuItem> items = menuItemService.getMenuItemsByRestaurant(restaurantId);
+        return ResponseEntity.ok(items);
+    }
     private final MenuItemService menuItemService;
 
     public MenuItemController(MenuItemService menuItemService) {
