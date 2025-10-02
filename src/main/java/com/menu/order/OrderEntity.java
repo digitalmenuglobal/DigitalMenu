@@ -27,7 +27,7 @@ public class OrderEntity {
     private int tableNumber;
     private String paymentStatus;
     private String customerName;
-    private String customerPhoneNumber;
+	private String customerPhoneNumber;
     private Instant createdAt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -161,15 +161,22 @@ public class OrderEntity {
 
 
 	@Embeddable
-    public static class OrderItem {
-        private Long menuItemId;
-        private int quantity;
-        private String name;
-    private String description;
-    private String type;
-    private double price;
-    private String category;
-    private String image;
+	public static class OrderItem {
+		private Long menuItemId;
+		private int quantity;
+		private String name;
+		private String description;
+		private String type;
+		private double price;
+		private String category;
+		private String image;
+		private String specialInstructions;
+		public String getSpecialInstructions() {
+			return specialInstructions;
+		}
+		public void setSpecialInstructions(String specialInstructions) {
+			this.specialInstructions = specialInstructions;
+		}
 	public Long getMenuItemId() {
 		return menuItemId;
 	}

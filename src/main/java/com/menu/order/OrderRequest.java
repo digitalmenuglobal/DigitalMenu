@@ -3,6 +3,7 @@ package com.menu.order;
 import java.time.Instant;
 import java.util.List;
 
+
 public class OrderRequest {
     public Long restaurantId;
     public List<OrderItemRequest> items;
@@ -23,5 +24,6 @@ public class OrderRequest {
         public double price;
         public String category;
         public String image;
+        public String specialInstructions;
     }
 }

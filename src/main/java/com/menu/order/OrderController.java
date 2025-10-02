@@ -1,3 +1,4 @@
+
 package com.menu.order;
 
 import org.springframework.http.HttpStatus;
@@ -36,5 +37,10 @@ public class OrderController {
             @org.springframework.web.bind.annotation.RequestParam String status) {
         OrderEntity updated = orderService.updateOrderStatus(orderId, status);
         return ResponseEntity.ok(updated);
+    }
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderEntity> getOrderById(@PathVariable Long orderId) {
+        OrderEntity order = orderService.getOrderById(orderId);
+        return ResponseEntity.ok(order);
     }
 }

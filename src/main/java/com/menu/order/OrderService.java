@@ -1,3 +1,4 @@
+  
 package com.menu.order;
 
 import java.time.Instant;
@@ -35,7 +36,7 @@ public class OrderService {
         order.setPaymentStatus(request.paymentStatus);
         order.setCustomerName(request.customerName);
         order.setCustomerPhoneNumber(request.customerPhoneNumber);
-        order.setCreatedAt(request.createdAt != null ? request.createdAt : Instant.now());
+    order.setCreatedAt(request.createdAt != null ? request.createdAt : Instant.now());
 
         List<OrderEntity.OrderItem> orderItems = new ArrayList<>();
         for (OrderRequest.OrderItemRequest itemReq : request.items) {
@@ -48,6 +49,7 @@ public class OrderService {
             item.setName(itemReq.name);
             item.setPrice(itemReq.price);
             item.setType(itemReq.type);
+            item.setSpecialInstructions(itemReq.specialInstructions);
             orderItems.add(item);
         }
         order.setItems(orderItems);
@@ -63,5 +65,10 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
         order.setStatus(status);
         return orderRepository.save(order);
+    }
+    
+    public OrderEntity getOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
 }
