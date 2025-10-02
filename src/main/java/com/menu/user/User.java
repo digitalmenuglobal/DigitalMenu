@@ -37,6 +37,8 @@ public class User {
 
     @Column(nullable = false)
     private String cuisineType;
+        @Column(nullable = true)
+        private String logo;
 
     public Long getId() {
         return id;
@@ -96,6 +98,13 @@ public class User {
     public void setCuisineType(String cuisineType) {
         this.cuisineType = cuisineType;
     }
+        public String getLogo() {
+            return logo;
+        }
+
+        public void setLogo(String logo) {
+            this.logo = logo;
+        }
 }
 
 

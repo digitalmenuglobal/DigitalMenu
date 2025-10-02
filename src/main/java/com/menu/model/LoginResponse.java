@@ -6,6 +6,7 @@ public class LoginResponse {
 	private String restaurantName;
 	private String email;
 	private String phoneNumber;
+	private String logo;
 	private String token;
 	public String getRestaurantName() {
 		return restaurantName;
@@ -25,6 +26,12 @@ public class LoginResponse {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
+	public String getLogo() {
+		return logo;
+	}
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
 	public String getToken() {
 		return token;
 	}
@@ -34,7 +41,7 @@ public class LoginResponse {
 	@Override
 	public String toString() {
 		return "LoginResponse [restaurantName=" + restaurantName + ", email=" + email + ", phoneNumber=" + phoneNumber
-				+ ", token=" + token + "]";
+				+ ", logo=" + logo + ", token=" + token + "]";
 	}
 	
 	

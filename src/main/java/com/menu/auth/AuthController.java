@@ -20,6 +20,30 @@ import jakarta.validation.constraints.NotBlank;
 @Validated
 @CrossOrigin
 public class AuthController {
+    public static record UpdateUserRequest(
+        @Email String email,
+        String restaurantName,
+        String phoneNumber,
+        String address,
+        String cuisineType,
+        String logo
+    ) {}
+
+    @PostMapping("/update-user")
+    public ResponseEntity<AuthResponse> updateUser(@RequestBody UpdateUserRequest request) {
+        User user = authService.updateUserDetails(request.email(), request.restaurantName(), request.phoneNumber(), request.address(), request.cuisineType(), request.logo());
+        return ResponseEntity.ok(new AuthResponse(
+            user.getId(),
+            user.getEmail(),
+            user.getRestaurantName(),
+            user.getPhoneNumber(),
+            user.getAddress(),
+            user.getCuisineType(),
+            user.getLogo(),
+            null,
+            "User updated successfully"
+        ));
+    }
 
     private final AuthService authService;
 
@@ -31,19 +55,21 @@ public class AuthController {
         @Email String email,
         @NotBlank String password,
         @NotBlank String confirmPassword,
-      @NotBlank String restaurantName,
+        @NotBlank String restaurantName,
         @NotBlank String phoneNumber,
         @NotBlank String address,
-        @NotBlank String cuisineType
+        @NotBlank String cuisineType,
+        String logo
     ) {}
     public static record AuthRequest(@Email String email, @NotBlank String password) {}
     public static record AuthResponse(
         Long id,
         String email,
-         String restaurantName,
+        String restaurantName,
         String phoneNumber,
         String address,
         String cuisineType,
+        String logo,
         String token,
         String message
     ) {}
@@ -53,6 +79,7 @@ public class AuthController {
         String restaurantName,
         String phoneNumber,
         String address,
+        String logo,
         String token,
         String message
     ) {}
@@ -67,7 +94,8 @@ public class AuthController {
             request.restaurantName(),
             request.phoneNumber(),
             request.address(),
-            request.cuisineType()
+            request.cuisineType(),
+            request.logo()
         );
         User user = result.user();
         return ResponseEntity.ok(new AuthResponse(
@@ -77,6 +105,7 @@ public class AuthController {
             user.getPhoneNumber(),
             user.getAddress(),
             user.getCuisineType(),
+            user.getLogo(),
             null,
             "Registration success"
         ));
@@ -91,8 +120,9 @@ public class AuthController {
             user.getEmail(),
             user.getRestaurantName(),
             user.getPhoneNumber(),
-            user.getAddress()
-,            token,
+            user.getAddress(),
+            user.getLogo(),
+            token,
             "login success"
         ));
     }
@@ -110,6 +140,7 @@ public class AuthController {
             user.getRestaurantName(),
             user.getPhoneNumber(),
             user.getAddress(),
+            user.getLogo(),
             token,
             "user info"
         ));
