@@ -15,14 +15,43 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class AuthService {
+    // In-memory OTP storage: email -> OTP
+    private final java.util.Map<String, String> otpStorage = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public void generateAndSendOtp(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        String otp = String.valueOf((int)(Math.random() * 900000) + 100000); // 6-digit OTP
+        otpStorage.put(email, otp);
+        String subject = "DigitalMenu Password Reset OTP";
+        String text = "Your OTP for password reset is: " + otp + "\nThis OTP is valid for 10 minutes.";
+        emailService.sendEmail(email, subject, text);
+    }
+
+    public boolean verifyOtp(String email, String otp) {
+        String storedOtp = otpStorage.get(email);
+        return storedOtp != null && storedOtp.equals(otp);
+    }
+
+    public void clearOtp(String email) {
+        otpStorage.remove(email);
+    }
+
     @Transactional
-    public User updateUserDetails(String email, String restaurantName, String phoneNumber, String address, String cuisineType, String logo) {
+    public void updatePassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+    @Transactional
+    public User updateUserDetails(String email, String restaurantName, String phoneNumber, String address, String cuisineType, String logo, String openingTime, String closingTime) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (restaurantName != null) user.setRestaurantName(restaurantName);
         if (phoneNumber != null) user.setPhoneNumber(phoneNumber);
         if (address != null) user.setAddress(address);
         if (cuisineType != null) user.setCuisineType(cuisineType);
         if (logo != null) user.setLogo(logo);
+        if (openingTime != null) user.setOpeningTime(openingTime);
+        if (closingTime != null) user.setClosingTime(closingTime);
         userRepository.save(user);
         return user;
     }

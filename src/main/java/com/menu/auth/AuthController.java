@@ -20,6 +20,40 @@ import jakarta.validation.constraints.NotBlank;
 @Validated
 @CrossOrigin
 public class AuthController {
+    public static record ForgotPasswordRequest(@Email String email) {}
+    public static record VerifyOtpRequest(@Email String email, String otp) {}
+    public static record UpdatePasswordRequest(@Email String email, String otp, String newPassword) {}
+
+    @PostMapping("/forgot-password/request-otp")
+    public ResponseEntity<String> requestOtp(@RequestBody ForgotPasswordRequest request) {
+        try {
+            authService.generateAndSendOtp(request.email());
+            return ResponseEntity.ok("OTP sent to your email.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/forgot-password/verify-otp")
+    public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpRequest request) {
+        boolean valid = authService.verifyOtp(request.email(), request.otp());
+        if (valid) {
+            return ResponseEntity.ok("OTP verified. You can now reset your password.");
+        } else {
+            return ResponseEntity.badRequest().body("Invalid OTP.");
+        }
+    }
+
+    @PostMapping("/forgot-password/update-password")
+    public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequest request) {
+        boolean valid = authService.verifyOtp(request.email(), request.otp());
+        if (!valid) {
+            return ResponseEntity.badRequest().body("Invalid OTP.");
+        }
+        authService.updatePassword(request.email(), request.newPassword());
+        authService.clearOtp(request.email());
+        return ResponseEntity.ok("Password updated successfully.");
+    }
     @GetMapping("/verify")
     public ResponseEntity<String> verifyUser(@org.springframework.web.bind.annotation.RequestParam Long userId) {
         boolean verified = authService.verifyUser(userId);
@@ -35,12 +69,14 @@ public class AuthController {
         String phoneNumber,
         String address,
         String cuisineType,
-        String logo
+        String logo,
+        String openingTime,
+        String closingTime
     ) {}
 
     @PostMapping("/update-user")
     public ResponseEntity<AuthResponse> updateUser(@RequestBody UpdateUserRequest request) {
-        User user = authService.updateUserDetails(request.email(), request.restaurantName(), request.phoneNumber(), request.address(), request.cuisineType(), request.logo());
+        User user = authService.updateUserDetails(request.email(), request.restaurantName(), request.phoneNumber(), request.address(), request.cuisineType(), request.logo(), request.openingTime(), request.closingTime());
         return ResponseEntity.ok(new AuthResponse(
             user.getId(),
             user.getEmail(),
@@ -89,6 +125,8 @@ public class AuthController {
         String phoneNumber,
         String address,
         String logo,
+        String openingTime,
+        String closingTime,
         boolean isVerified,
         String token,
         String message
@@ -132,6 +170,8 @@ public class AuthController {
             user.getPhoneNumber(),
             user.getAddress(),
             user.getLogo(),
+            user.getOpeningTime(),
+            user.getClosingTime(),
             user.isVerified(),
             token,
             "login success"
@@ -152,6 +192,8 @@ public class AuthController {
             user.getPhoneNumber(),
             user.getAddress(),
             user.getLogo(),
+            user.getOpeningTime(),
+            user.getClosingTime(),
             user.isVerified(),
             token,
             "user info"
