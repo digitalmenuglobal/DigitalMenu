@@ -20,6 +20,15 @@ import jakarta.validation.constraints.NotBlank;
 @Validated
 @CrossOrigin
 public class AuthController {
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyUser(@org.springframework.web.bind.annotation.RequestParam Long userId) {
+        boolean verified = authService.verifyUser(userId);
+        if (verified) {
+            return ResponseEntity.ok("Account verified successfully. You can now log in.");
+        } else {
+            return ResponseEntity.badRequest().body("Verification failed.");
+        }
+    }
     public static record UpdateUserRequest(
         @Email String email,
         String restaurantName,

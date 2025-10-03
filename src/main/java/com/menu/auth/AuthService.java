@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.menu.security.JwtService;
 import com.menu.user.User;
 import com.menu.user.UserRepository;
+import com.menu.util.EmailService;
 
 import jakarta.transaction.Transactional;
 
@@ -45,15 +46,18 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final EmailService emailService;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
-                       JwtService jwtService) {
+                       JwtService jwtService,
+                       EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -72,15 +76,35 @@ public class AuthService {
         user.setAddress(address);
         user.setCuisineType(cuisineType);
         user.setLogo(logo);
+        user.setVerified(false);
         userRepository.save(user);
+
+        // Send verification email
+        String verifyLink = "https://digitalmenu-psm5.onrender.com/api/auth/verify?userId=" + user.getId();
+        String subject = "Verify your DigitalMenu account";
+        String text = "Hello " + restaurantName + ",\n\nPlease verify your account by clicking the link below:\n" + verifyLink + "\n\nThank you!";
+        emailService.sendEmail(email, subject, text);
+
         return new RegisterResult(user);
     }
 
     public String authenticate(String email, String password) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (!user.isVerified()) {
+            throw new IllegalArgumentException("Account not verified. Please check your email.");
+        }
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(email, password);
         authenticationManager.authenticate(token);
         return jwtService.generateToken(email);
+    }
+
+    @Transactional
+    public boolean verifyUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setVerified(true);
+        userRepository.save(user);
+        return true;
     }
 }
 

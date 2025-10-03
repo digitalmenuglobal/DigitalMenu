@@ -40,6 +40,9 @@ public class User {
         @Column(nullable = true)
         private String logo;
 
+        @Column(nullable = false)
+        private boolean isVerified = false;
+
     public Long getId() {
         return id;
     }
@@ -104,6 +107,14 @@ public class User {
 
         public void setLogo(String logo) {
             this.logo = logo;
+        }
+
+        public boolean isVerified() {
+            return isVerified;
+        }
+
+        public void setVerified(boolean verified) {
+            isVerified = verified;
         }
 }
 
