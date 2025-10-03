@@ -104,7 +104,9 @@ public class AuthController {
         @NotBlank String phoneNumber,
         @NotBlank String address,
         @NotBlank String cuisineType,
-        String logo
+        String logo,
+        String openingTime,
+        String closingTime
     ) {}
     public static record AuthRequest(@Email String email, @NotBlank String password) {}
     public static record AuthResponse(
@@ -135,28 +137,56 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        var result = authService.register(
-            request.email(),
-            request.password(),
-            request.confirmPassword(),
-            request.restaurantName(),
-            request.phoneNumber(),
-            request.address(),
-            request.cuisineType(),
-            request.logo()
-        );
-        User user = result.user();
-        return ResponseEntity.ok(new AuthResponse(
-            user.getId(),
-            user.getEmail(),
-            user.getRestaurantName(),
-            user.getPhoneNumber(),
-            user.getAddress(),
-            user.getCuisineType(),
-            user.getLogo(),
-            null,
-            "Registration success"
-        ));
+        try {
+            var result = authService.register(
+                request.email(),
+                request.password(),
+                request.confirmPassword(),
+                request.restaurantName(),
+                request.phoneNumber(),
+                request.address(),
+                request.cuisineType(),
+                request.logo(),
+                request.openingTime(),
+                request.closingTime()
+            );
+            User user = result.user();
+            return ResponseEntity.ok(new AuthResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getRestaurantName(),
+                user.getPhoneNumber(),
+                user.getAddress(),
+                user.getCuisineType(),
+                user.getLogo(),
+                null,
+                "Registration success. Please verify your email before logging in."
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new AuthResponse(
+                null,
+                request.email(),
+                request.restaurantName(),
+                request.phoneNumber(),
+                request.address(),
+                request.cuisineType(),
+                request.logo(),
+                null,
+                e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new AuthResponse(
+                null,
+                request.email(),
+                request.restaurantName(),
+                request.phoneNumber(),
+                request.address(),
+                request.cuisineType(),
+                request.logo(),
+                null,
+                "Registration failed: " + e.getMessage()
+            ));
+        }
     }
 
     @PostMapping("/login")

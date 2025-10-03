@@ -90,23 +90,51 @@ public class AuthService {
     }
 
     @Transactional
-    public RegisterResult register(String email, String password, String confirmPassword, String restaurantName, String phoneNumber, String address, String cuisineType, String logo) {
-        if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already in use");
+    public RegisterResult register(String email, String password, String confirmPassword, String restaurantName, String phoneNumber, String address, String cuisineType, String logo, String openingTime, String closingTime) {
+        // Validate required fields
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Password is required");
+        }
+        if (confirmPassword == null || confirmPassword.isBlank()) {
+            throw new IllegalArgumentException("Confirm password is required");
+        }
+        if (restaurantName == null || restaurantName.isBlank()) {
+            throw new IllegalArgumentException("Restaurant name is required");
+        }
+        if (phoneNumber == null || phoneNumber.isBlank()) {
+            throw new IllegalArgumentException("Phone number is required");
+        }
+        if (address == null || address.isBlank()) {
+            throw new IllegalArgumentException("Address is required");
+        }
+        if (cuisineType == null || cuisineType.isBlank()) {
+            throw new IllegalArgumentException("Cuisine type is required");
         }
         if (!password.equals(confirmPassword)) {
             throw new IllegalArgumentException("Passwords do not match");
         }
-        User user = new User();
-        user.setEmail(email);
-        user.setPasswordHash(passwordEncoder.encode(password));
-        user.setRestaurantName(restaurantName);
-        user.setPhoneNumber(phoneNumber);
-        user.setAddress(address);
-        user.setCuisineType(cuisineType);
-        user.setLogo(logo);
-        user.setVerified(false);
-        userRepository.save(user);
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+        if (userRepository.existsByRestaurantName(restaurantName)) {
+            throw new IllegalArgumentException("Restaurant name already in use");
+        }
+    User user = new User();
+    user.setEmail(email);
+    user.setPasswordHash(passwordEncoder.encode(password));
+    user.setRestaurantName(restaurantName);
+    user.setPhoneNumber(phoneNumber);
+    user.setAddress(address);
+    user.setCuisineType(cuisineType);
+    user.setLogo(logo);
+    // Set openingTime and closingTime if provided
+    if (openingTime != null) user.setOpeningTime(openingTime);
+    if (closingTime != null) user.setClosingTime(closingTime);
+    user.setVerified(false);
+    userRepository.save(user);
 
         // Send verification email
         String verifyLink = "https://digitalmenu-psm5.onrender.com/api/auth/verify?userId=" + user.getId();
