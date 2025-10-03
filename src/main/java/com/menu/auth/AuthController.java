@@ -89,6 +89,7 @@ public class AuthController {
         String phoneNumber,
         String address,
         String logo,
+        boolean isVerified,
         String token,
         String message
     ) {}
@@ -131,6 +132,7 @@ public class AuthController {
             user.getPhoneNumber(),
             user.getAddress(),
             user.getLogo(),
+            user.isVerified(),
             token,
             "login success"
         ));
@@ -150,6 +152,7 @@ public class AuthController {
             user.getPhoneNumber(),
             user.getAddress(),
             user.getLogo(),
+            user.isVerified(),
             token,
             "user info"
         ));
