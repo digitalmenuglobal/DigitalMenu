@@ -52,7 +52,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String token = authService.getJwtService().generateToken(user.getEmail());
 
         // Redirect to frontend with token
-        String frontendUrl = "https://digitalmenuuu.netlify.app/restaurant-dashboard?token=" + token;
+        String frontendUrl = "http://localhost:3000/restaurant-dashboard?token=" + token;
         response.sendRedirect(frontendUrl);
     }
 }
