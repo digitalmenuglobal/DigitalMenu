@@ -51,10 +51,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         // Generate JWT
         String token = authService.getJwtService().generateToken(user.getEmail());
 
-        // Respond with user info and token as JSON
-    String json = String.format("{\"id\":%d,\"email\":\"%s\",\"restaurantName\":\"%s\",\"phoneNumber\":\"%s\",\"logo\":\"%s\",\"token\":\"%s\",\"message\":\"Google login success\"}",
-        user.getId(), user.getEmail(), user.getRestaurantName(), user.getPhoneNumber(), user.getLogo(), token);
-        response.setContentType("application/json");
-        response.getWriter().write(json);
+        // Redirect to frontend with token
+        String frontendUrl = "https://digitalmenuuu.netlify.app/restaurant-dashboard?token=" + token;
+        response.sendRedirect(frontendUrl);
     }
 }
