@@ -57,13 +57,13 @@ public class OrderService {
         order.setItems(orderItems);
         order = orderRepository.save(order);
         
-        // Send SMS confirmation
-        try {
-            smsService.sendOrderConfirmation(order);
-        } catch (Exception e) {
-            // Log the error but don't stop the order process
-            System.err.println("Failed to send order confirmation SMS: " + e.getMessage());
-        }
+        // // Send SMS confirmation
+        // try {
+        //     smsService.sendOrderConfirmation(order);
+        // } catch (Exception e) {
+        //     // Log the error but don't stop the order process
+        //     System.err.println("Failed to send order confirmation SMS: " + e.getMessage());
+        // }
         return order;
     }
     public List<OrderEntity> getOrdersByRestaurantId(Long restaurantId) {
