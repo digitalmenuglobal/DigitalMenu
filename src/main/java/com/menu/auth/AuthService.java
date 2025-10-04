@@ -137,7 +137,7 @@ public class AuthService {
     userRepository.save(user);
 
         // Send verification email
-        String verifyLink = "https://digitalmenu-psm5.onrender.com/api/auth/verify?userId=" + user.getId();
+        String verifyLink = "http://localhost:8080/api/auth/verify?userId=" + user.getId();
         String subject = "Verify your DigitalMenu account";
         String text = "Hello " + restaurantName + ",\n\nPlease verify your account by clicking the link below:\n" + verifyLink + "\n\nThank you!";
         emailService.sendEmail(email, subject, text);

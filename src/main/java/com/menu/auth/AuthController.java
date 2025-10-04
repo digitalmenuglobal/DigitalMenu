@@ -191,21 +191,42 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody AuthRequest request) {
-        String token = authService.authenticate(request.email(), request.password());
-        User user = authService.getUserByEmail(request.email());
-        return ResponseEntity.ok(new LoginResponse(
-            user.getId(),
-            user.getEmail(),
-            user.getRestaurantName(),
-            user.getPhoneNumber(),
-            user.getAddress(),
-            user.getLogo(),
-            user.getOpeningTime(),
-            user.getClosingTime(),
-            user.isVerified(),
-            token,
-            "login success"
-        ));
+        try {
+            User user = authService.getUserByEmail(request.email());
+            if (!user.isVerified()) {
+                return ResponseEntity.badRequest().body(new LoginResponse(
+                    user.getId(), user.getEmail(), user.getRestaurantName(), user.getPhoneNumber(), user.getAddress(), user.getLogo(), user.getOpeningTime(), user.getClosingTime(), user.isVerified(), null, "Account not verified. Please check your email."
+                ));
+            }
+            String token = authService.authenticate(request.email(), request.password());
+            return ResponseEntity.ok(new LoginResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getRestaurantName(),
+                user.getPhoneNumber(),
+                user.getAddress(),
+                user.getLogo(),
+                user.getOpeningTime(),
+                user.getClosingTime(),
+                user.isVerified(),
+                token,
+                "login success"
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new LoginResponse(
+                null,
+                request.email(),
+                null, null, null, null, null, null, false, null,
+                e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(new LoginResponse(
+                null,
+                request.email(),
+                null, null, null, null, null, null, false, null,
+                "Login failed: " + e.getMessage()
+            ));
+        }
     }
     @GetMapping("/me")
     public ResponseEntity<LoginResponse> getMe(@RequestHeader("Authorization") String authHeader) {

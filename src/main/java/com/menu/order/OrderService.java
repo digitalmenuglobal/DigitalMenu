@@ -17,11 +17,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final MenuItemRepository menuItemRepository;
+    private final com.menu.util.SmsService smsService;
 
-    public OrderService(OrderRepository orderRepository, UserRepository userRepository, MenuItemRepository menuItemRepository) {
+    public OrderService(OrderRepository orderRepository, UserRepository userRepository, MenuItemRepository menuItemRepository, com.menu.util.SmsService smsService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.menuItemRepository = menuItemRepository;
+        this.smsService = smsService;
     }
 
     @Transactional
@@ -53,7 +55,16 @@ public class OrderService {
             orderItems.add(item);
         }
         order.setItems(orderItems);
-        return orderRepository.save(order);
+        order = orderRepository.save(order);
+        
+        // Send SMS confirmation
+        try {
+            smsService.sendOrderConfirmation(order);
+        } catch (Exception e) {
+            // Log the error but don't stop the order process
+            System.err.println("Failed to send order confirmation SMS: " + e.getMessage());
+        }
+        return order;
     }
     public List<OrderEntity> getOrdersByRestaurantId(Long restaurantId) {
         return orderRepository.findByRestaurantId(restaurantId);
