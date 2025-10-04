@@ -17,13 +17,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final MenuItemRepository menuItemRepository;
-    private final com.menu.util.SmsService smsService;
+//    private final com.menu.util.SmsService smsService;
 
-    public OrderService(OrderRepository orderRepository, UserRepository userRepository, MenuItemRepository menuItemRepository, com.menu.util.SmsService smsService) {
+    public OrderService(OrderRepository orderRepository, UserRepository userRepository, MenuItemRepository menuItemRepository) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.menuItemRepository = menuItemRepository;
-        this.smsService = smsService;
+//        this.smsService = smsService;
     }
 
     @Transactional

@@ -27,7 +27,7 @@ public class AuthController {
     @PostMapping("/forgot-password/request-otp")
     public ResponseEntity<String> requestOtp(@RequestBody ForgotPasswordRequest request) {
         try {
-            authService.generateAndSendOtp(request.email());
+//            authService.generateAndSendOtp(request.email());
             return ResponseEntity.ok("OTP sent to your email.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -36,7 +36,8 @@ public class AuthController {
 
     @PostMapping("/forgot-password/verify-otp")
     public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpRequest request) {
-        boolean valid = authService.verifyOtp(request.email(), request.otp());
+//        boolean valid = authService.verifyOtp(request.email(), request.otp());
+    	boolean valid=false;
         if (valid) {
             return ResponseEntity.ok("OTP verified. You can now reset your password.");
         } else {
@@ -46,12 +47,13 @@ public class AuthController {
 
     @PostMapping("/forgot-password/update-password")
     public ResponseEntity<String> updatePassword(@RequestBody UpdatePasswordRequest request) {
-        boolean valid = authService.verifyOtp(request.email(), request.otp());
+//        boolean valid = authService.verifyOtp(request.email(), request.otp());
+    	boolean valid=false;
         if (!valid) {
             return ResponseEntity.badRequest().body("Invalid OTP.");
         }
         authService.updatePassword(request.email(), request.newPassword());
-        authService.clearOtp(request.email());
+//        authService.clearOtp(request.email());
         return ResponseEntity.ok("Password updated successfully.");
     }
     @GetMapping("/verify")

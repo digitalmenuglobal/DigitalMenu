@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.menu.security.JwtService;
 import com.menu.user.User;
 import com.menu.user.UserRepository;
-import com.menu.util.EmailService;
+//import com.menu.util.EmailService;
 
 import jakarta.transaction.Transactional;
 
@@ -18,23 +18,23 @@ public class AuthService {
     // In-memory OTP storage: email -> OTP
     private final java.util.Map<String, String> otpStorage = new java.util.concurrent.ConcurrentHashMap<>();
 
-    public void generateAndSendOtp(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
-        String otp = String.valueOf((int)(Math.random() * 900000) + 100000); // 6-digit OTP
-        otpStorage.put(email, otp);
-        String subject = "DigitalMenu Password Reset OTP";
-        String text = "Your OTP for password reset is: " + otp + "\nThis OTP is valid for 10 minutes.";
-        emailService.sendEmail(email, subject, text);
-    }
-
-    public boolean verifyOtp(String email, String otp) {
-        String storedOtp = otpStorage.get(email);
-        return storedOtp != null && storedOtp.equals(otp);
-    }
-
-    public void clearOtp(String email) {
-        otpStorage.remove(email);
-    }
+//    public void generateAndSendOtp(String email) {
+//        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+//        String otp = String.valueOf((int)(Math.random() * 900000) + 100000); // 6-digit OTP
+//        otpStorage.put(email, otp);
+//        String subject = "DigitalMenu Password Reset OTP";
+//        String text = "Your OTP for password reset is: " + otp + "\nThis OTP is valid for 10 minutes.";
+//        emailService.sendEmail(email, subject, text);
+//    }
+//
+//    public boolean verifyOtp(String email, String otp) {
+//        String storedOtp = otpStorage.get(email);
+//        return storedOtp != null && storedOtp.equals(otp);
+//    }
+//
+//    public void clearOtp(String email) {
+//        otpStorage.remove(email);
+//    }
 
     @Transactional
     public void updatePassword(String email, String newPassword) {
@@ -75,18 +75,18 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final EmailService emailService;
+//    private final EmailService emailService;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
-                       JwtService jwtService,
-                       EmailService emailService) {
+                       JwtService jwtService
+                       ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
-        this.emailService = emailService;
+       
     }
 
     @Transactional
