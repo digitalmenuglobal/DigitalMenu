@@ -136,11 +136,11 @@ public class AuthService {
     user.setVerified(false);
     userRepository.save(user);
 
-        // Send verification email
-        String verifyLink = "http://localhost:8080/api/auth/verify?userId=" + user.getId();
-        String subject = "Verify your DigitalMenu account";
-        String text = "Hello " + restaurantName + ",\n\nPlease verify your account by clicking the link below:\n" + verifyLink + "\n\nThank you!";
-        emailService.sendEmail(email, subject, text);
+        // // Send verification email
+        // String verifyLink = "http://localhost:8080/api/auth/verify?userId=" + user.getId();
+        // String subject = "Verify your DigitalMenu account";
+        // String text = "Hello " + restaurantName + ",\n\nPlease verify your account by clicking the link below:\n" + verifyLink + "\n\nThank you!";
+        // emailService.sendEmail(email, subject, text);
 
         return new RegisterResult(user);
     }
