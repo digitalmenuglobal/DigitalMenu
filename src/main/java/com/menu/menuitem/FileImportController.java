@@ -19,7 +19,7 @@ public class FileImportController {
     @PostMapping("/import")
     public ResponseEntity<?> importMenuItems(@RequestParam("file") MultipartFile file) {
         try {
-            List<MenuItemRequest> menuItems = fileImportService.processFile(file);
+            List<MenuItem> menuItems = fileImportService.processFile(file);
             return ResponseEntity.ok(menuItems);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error processing file: " + e.getMessage());

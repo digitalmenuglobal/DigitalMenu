@@ -19,9 +19,9 @@ import com.opencsv.exceptions.CsvException;
 @Service
 public class FileImportService {
 
-    public List<MenuItemRequest> processFile(MultipartFile file) throws IOException {
+    public List<MenuItem> processFile(MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
-        List<MenuItemRequest> menuItems = new ArrayList<>();
+        List<MenuItem> menuItems = new ArrayList<>();
 
         if (fileName.endsWith(".csv")) {
             menuItems = processCSV(file);
@@ -34,8 +34,8 @@ public class FileImportService {
         return menuItems;
     }
 
-    private List<MenuItemRequest> processCSV(MultipartFile file) throws IOException {
-        List<MenuItemRequest> menuItems = new ArrayList<>();
+    private List<MenuItem> processCSV(MultipartFile file) throws IOException {
+        List<MenuItem> menuItems = new ArrayList<>();
         try (CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
             List<String[]> rows = reader.readAll();
             boolean isFirstRow = true;
@@ -46,7 +46,7 @@ public class FileImportService {
                     continue; // Skip header row
                 }
                 
-                MenuItemRequest item = createMenuItemFromRow(row);
+                MenuItem item = createMenuItemFromRow(row);
                 menuItems.add(item);
             }
         } catch (CsvException e) {
@@ -55,8 +55,8 @@ public class FileImportService {
         return menuItems;
     }
 
-    private List<MenuItemRequest> processExcel(MultipartFile file) throws IOException {
-        List<MenuItemRequest> menuItems = new ArrayList<>();
+    private List<MenuItem> processExcel(MultipartFile file) throws IOException {
+        List<MenuItem> menuItems = new ArrayList<>();
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
             boolean isFirstRow = true;
@@ -67,15 +67,15 @@ public class FileImportService {
                     continue; // Skip header row
                 }
                 
-                MenuItemRequest item = createMenuItemFromExcelRow(row);
+                MenuItem item = createMenuItemFromExcelRow(row);
                 menuItems.add(item);
             }
         }
         return menuItems;
     }
 
-    private MenuItemRequest createMenuItemFromRow(String[] row) {
-        MenuItemRequest item = new MenuItemRequest();
+    private MenuItem createMenuItemFromRow(String[] row) {
+        MenuItem item = new MenuItem();
         try {
             item.setName(row[0]);
             item.setCategory(row[1]);
@@ -90,13 +90,13 @@ public class FileImportService {
         return item;
     }
 
-    private MenuItemRequest createMenuItemFromExcelRow(Row row) {
-        MenuItemRequest item = new MenuItemRequest();
+    private MenuItem createMenuItemFromExcelRow(Row row) {
+        MenuItem item = new MenuItem();
         try {
             item.setName(getCellValueAsString(row.getCell(0)));
             item.setCategory(getCellValueAsString(row.getCell(1)));
             item.setDescription(getCellValueAsString(row.getCell(2)));
-            item.setQuantity( row.getCell(3).getNumericCellValue());
+            item.setQuantity(getCellValueAsString(row.getCell(3)));
             item.setType(getCellValueAsString(row.getCell(4)));
             item.setPrice(row.getCell(5).getNumericCellValue());
             item.setImage(getCellValueAsString(row.getCell(6)));

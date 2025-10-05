@@ -21,7 +21,7 @@ public class MenuItemService {
         this.userRepository = userRepository;
     }
 
-    @Transactional
+     @Transactional
     public List<MenuItem> addMenuItems(Long restaurantId, List<MenuItemRequest> items) {
         User restaurant = userRepository.findById(restaurantId)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
@@ -32,7 +32,7 @@ public class MenuItemService {
             item.setDescription(req.description);
             item.setType(req.type);
             item.setPrice(req.price);
-            item.setQuantity(String.valueOf(req.quantity));
+            item.setQuantity(req.quantity);
             item.setCategory(req.category);
             item.setImage(req.image);
             item.setRestaurant(restaurant);
