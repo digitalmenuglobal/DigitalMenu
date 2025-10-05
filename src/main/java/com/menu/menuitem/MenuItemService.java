@@ -32,7 +32,7 @@ public class MenuItemService {
             item.setDescription(req.description);
             item.setType(req.type);
             item.setPrice(req.price);
-            item.setQuantity(req.quantity);
+            item.setQuantity(String.valueOf(req.quantity));
             item.setCategory(req.category);
             item.setImage(req.image);
             item.setRestaurant(restaurant);
@@ -51,7 +51,7 @@ public class MenuItemService {
         item.setDescription(request.description);
         item.setType(request.type);
         item.setPrice(request.price);
-        item.setQuantity(request.quantity);
+        item.setQuantity(String.valueOf(request.quantity));
         item.setCategory(request.category);
         item.setImage(request.image);
         return menuItemRepository.save(item);
