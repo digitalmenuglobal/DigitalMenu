@@ -195,11 +195,11 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody AuthRequest request) {
         try {
             User user = authService.getUserByEmail(request.email());
-            if (!user.isVerified()) {
-                return ResponseEntity.badRequest().body(new LoginResponse(
-                    user.getId(), user.getEmail(), user.getRestaurantName(), user.getPhoneNumber(), user.getAddress(), user.getLogo(), user.getOpeningTime(), user.getClosingTime(), user.isVerified(), null, "Account not verified. Please check your email."
-                ));
-            }
+            // if (!user.isVerified()) {
+            //     return ResponseEntity.badRequest().body(new LoginResponse(
+            //         user.getId(), user.getEmail(), user.getRestaurantName(), user.getPhoneNumber(), user.getAddress(), user.getLogo(), user.getOpeningTime(), user.getClosingTime(), user.isVerified(), null, "Account not verified. Please check your email."
+            //     ));
+            // }
             String token = authService.authenticate(request.email(), request.password());
             return ResponseEntity.ok(new LoginResponse(
                 user.getId(),
