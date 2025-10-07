@@ -146,10 +146,10 @@ public class AuthService {
     }
 
     public String authenticate(String email, String password) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
-        if (!user.isVerified()) {
-            throw new IllegalArgumentException("Account not verified. Please check your email.");
-        }
+//        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+//        if (!user.isVerified()) {
+//            throw new IllegalArgumentException("Account not verified. Please check your email.");
+//        }
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(email, password);
         authenticationManager.authenticate(token);
