@@ -25,8 +25,8 @@ public class CategoryService {
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
 
         // Check if display order already exists for this restaurant
-        if (categoryRepository.existsByRestaurantIdAndDisplayOrder(restaurant.getId(), request.getDisplayOrder())) {
-            throw new IllegalArgumentException("Display order already exists for this restaurant");
+        if (categoryRepository.existsByRestaurantAndDisplayOrder(restaurant.getId(), request.getDisplayOrder())) {
+            throw new CategoryException.DuplicateDisplayOrderException("Display order " + request.getDisplayOrder() + " already exists for this restaurant");
         }
 
         Category category = new Category();
@@ -39,20 +39,23 @@ public class CategoryService {
     }
 
     public List<Category> getCategoriesByRestaurant(Long restaurantId) {
-        return categoryRepository.findByRestaurantIdOrderByDisplayOrder(restaurantId);
+        if (restaurantId == null) {
+            throw new CategoryException.InvalidOperationException("Restaurant ID cannot be null");
+        }
+        return categoryRepository.findCategoriesByRestaurantId(restaurantId);
     }
 
     @Transactional
     public Category updateCategory(String categoryId, CategoryRequest request) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+                .orElseThrow(() -> new CategoryException.CategoryNotFoundException("Category not found with ID: " + categoryId));
 
         // Check if new display order conflicts with existing ones
         if (!category.getDisplayOrder().equals(request.getDisplayOrder()) &&
-            categoryRepository.existsByRestaurantIdAndDisplayOrder(
+            categoryRepository.existsByRestaurantAndDisplayOrder(
                 category.getRestaurant().getId(), 
                 request.getDisplayOrder())) {
-            throw new IllegalArgumentException("Display order already exists for this restaurant");
+            throw new CategoryException.DuplicateDisplayOrderException("Display order already exists for this restaurant");
         }
 
         category.setName(request.getName());
@@ -81,7 +84,7 @@ public class CategoryService {
     @Transactional
     public List<Category> reorderCategory(Long restaurantId, String categoryId, String direction) {
         // 1. Get current categories ordered by display_order
-        List<Category> categories = categoryRepository.findByRestaurantIdOrderByDisplayOrder(restaurantId);
+        List<Category> categories = categoryRepository.findCategoriesByRestaurantId(restaurantId);
         
         // 2. Find current index
         int currentIndex = -1;
@@ -116,6 +119,6 @@ public class CategoryService {
         categoryRepository.save(swapCategory);
 
         // 5. Return updated list
-        return categoryRepository.findByRestaurantIdOrderByDisplayOrder(restaurantId);
+        return categoryRepository.findCategoriesByRestaurantId(restaurantId);
     }
 }
