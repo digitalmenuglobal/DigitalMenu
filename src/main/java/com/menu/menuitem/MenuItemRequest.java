@@ -8,4 +8,7 @@ public class MenuItemRequest {
 	    public String quantity;
 	    public String category;
 	    public String image;
+	    public boolean isTodaySpecial;
+	    public boolean isHighRecommended;
+	    public boolean isTopRated;
 }

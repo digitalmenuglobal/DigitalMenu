@@ -28,6 +28,9 @@ public class MenuItem {
     private String image;
 
     private boolean isAvailable = true;
+    private boolean isTodaySpecial = false;
+    private boolean isHighRecommended = false;
+    private boolean isTopRated = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
@@ -56,4 +59,13 @@ public class MenuItem {
 
     public boolean isAvailable() { return isAvailable; }
     public void setAvailable(boolean available) { isAvailable = available; }
+
+    public boolean isTodaySpecial() { return isTodaySpecial; }
+    public void setTodaySpecial(boolean todaySpecial) { isTodaySpecial = todaySpecial; }
+
+    public boolean isHighRecommended() { return isHighRecommended; }
+    public void setHighRecommended(boolean highRecommended) { isHighRecommended = highRecommended; }
+
+    public boolean isTopRated() { return isTopRated; }
+    public void setTopRated(boolean topRated) { isTopRated = topRated; }
 }

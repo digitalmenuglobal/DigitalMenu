@@ -35,6 +35,9 @@ public class MenuItemService {
             item.setQuantity(req.quantity);
             item.setCategory(req.category);
             item.setImage(req.image);
+            item.setTodaySpecial(req.isTodaySpecial);
+            item.setHighRecommended(req.isHighRecommended);
+            item.setTopRated(req.isTopRated);
             item.setRestaurant(restaurant);
             saved.add(menuItemRepository.save(item));
         }
@@ -54,6 +57,9 @@ public class MenuItemService {
         item.setQuantity(String.valueOf(request.quantity));
         item.setCategory(request.category);
         item.setImage(request.image);
+        item.setTodaySpecial(request.isTodaySpecial);
+        item.setHighRecommended(request.isHighRecommended);
+        item.setTopRated(request.isTopRated);
         return menuItemRepository.save(item);
     }
 
